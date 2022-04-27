@@ -1,6 +1,6 @@
 *.egg-info
 .coverage
-#.ipynb_checkpoints
+.ipynb_checkpoints
 .DS_Store
 raw_data/
 *.csv
