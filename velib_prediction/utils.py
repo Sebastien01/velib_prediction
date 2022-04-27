@@ -5,7 +5,6 @@ import os
 import requests
 
 from joblib import load
-from config import METEO_TOKEN
 
 
 class velibPredictor():
@@ -24,7 +23,7 @@ class velibPredictor():
     def get_API_meteo(self, day_shift_nb):
         """Retrieve meteo forecast info via meteo-concept' API, return a pd.DataFrame for a given day"""
 
-        TOKEN = METEO_TOKEN
+        TOKEN = os.environ.get("METEO_TOKEN")
     
         url = f'https://api.meteo-concept.com/api/forecast/daily/{day_shift_nb}/periods?token={TOKEN}&insee=75056'
         rep = requests.get(url)
@@ -104,7 +103,7 @@ class dfConstructor():
     
     def get_meteo_info(self):
         
-        TOKEN = METEO_TOKEN
+        TOKEN = os.environ.get("METEO_TOKEN")
         
         url = f'http://api.meteo-concept.com/api/forecast/nextHours?token={TOKEN}&insee=75056&hourly=true'
         rep = requests.get(url).json()
