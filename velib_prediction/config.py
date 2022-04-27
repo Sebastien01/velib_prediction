@@ -1,0 +1,1 @@
+METEO_TOKEN = "b2e61b6debca16466d2155717dfbd66e4174baaf17c9be89c8daae6addcb553f"
