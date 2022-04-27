@@ -4,7 +4,6 @@ streamlit
 datetime
 joblib
 scikit-learn
-argparse
 
 
 
