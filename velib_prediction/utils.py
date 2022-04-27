@@ -1,5 +1,3 @@
-from importlib.resources import path
-from unicodedata import name
 import pandas as pd
 import os
 import requests

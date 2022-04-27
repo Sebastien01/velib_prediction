@@ -2,7 +2,6 @@ import requests
 import pandas as pd
 
 from utils import dfConstructor
-from config import METEO_TOKEN
 from time import sleep
 
              
