@@ -126,3 +126,5 @@ class dfConstructor():
             df[col] = meteo_df[col]
         
         df.to_csv(f'{file_name}', header=False, mode='a')   
+        
+    
