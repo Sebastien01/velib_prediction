@@ -1,7 +1,6 @@
 import requests
 import pandas as pd
 
-from pathlib import Path
 from utils import dfConstructor
 from config import METEO_TOKEN
 from time import sleep

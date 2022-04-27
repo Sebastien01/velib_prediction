@@ -33,4 +33,4 @@ if st.button('Compute predictions 🤖🧠'):
     display_preds(vb.predict())
     
 else:
-     st.write('No date input yet')
+     st.write('No date input yet...')
