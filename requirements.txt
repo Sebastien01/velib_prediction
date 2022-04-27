@@ -1,9 +1,7 @@
 requests
 pandas 
-
 streamlit
 datetime
-os
 joblib
 scikit-learn
 argparse
