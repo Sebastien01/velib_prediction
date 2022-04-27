@@ -1,0 +1,1 @@
+web: pip install . -U && velib_prediction-run
