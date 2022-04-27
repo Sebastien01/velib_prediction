@@ -4,6 +4,6 @@ streamlit
 datetime
 joblib
 scikit-learn
-
+coverage
 
 
