@@ -1,1 +1,1 @@
-web: sh setup.sh && streamlit run streamlit_app.py
+web: sh setup.sh && streamlit run velib_prediction/streamlit_app.py
