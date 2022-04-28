@@ -1,1 +1,1 @@
-web: pip install . -U && velib_prediction-run
+web: sh setup.sh && streamlit run streamlit_app.py
