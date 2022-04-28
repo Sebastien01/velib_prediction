@@ -28,7 +28,7 @@ class velibPredictor():
         url = f'https://api.meteo-concept.com/api/forecast/daily/{day_shift_nb}/periods?token={TOKEN}&insee=75056'
         rep = requests.get(url)
 
-        assert rep.status_code == 200, f"API call failed with code error {rep.status_code} : \nTOKEN = {TOKEN}"
+        assert rep.status_code == 200, f"API call failed with code error {rep.status_code}"
         
         df = pd.DataFrame(rep.json()['forecast']).loc[:,['temp2m','probarain','weather','wind10m','datetime']]
         df['datetime'] = pd.to_datetime(df.datetime)
