@@ -3,6 +3,7 @@ import os
 import requests
 
 from joblib import load
+from pathlib import Path
 
 
 class velibPredictor():
@@ -10,23 +11,24 @@ class velibPredictor():
     
     def __init__(self, date, hour):
         
+        
         self.target_date = pd.Timestamp(f"{date} {hour}", tz="Europe/Brussels")
         
-        self.ATF_DOCKS = load('modeling/models/artefact_docks.joblib')
-        self.ATF_MECA = load('modeling/models/artefact_meca.joblib')
-        self.MAIRIE_DOCKS = load('modeling/models/mairie_neuf_docks.joblib')
-        self.MAIRIE_MECA = load('modeling/models/mairie_neuf_meca.joblib')
+        self.ATF_DOCKS = load('velib_prediction/modeling/models/artefact_docks.joblib')
+        self.ATF_MECA = load('velib_prediction/modeling/models/artefact_meca.joblib')
+        self.MAIRIE_DOCKS = load('velib_prediction/modeling/models/mairie_neuf_docks.joblib')
+        self.MAIRIE_MECA = load('velib_prediction/modeling/models/mairie_neuf_meca.joblib')
 
         
     def get_API_meteo(self, day_shift_nb):
         """Retrieve meteo forecast info via meteo-concept' API, return a pd.DataFrame for a given day"""
 
-        TOKEN = os.environ.get("METEO_TOKEN")
+        TOKEN = os.environ["METEO_TOKEN"]
     
         url = f'https://api.meteo-concept.com/api/forecast/daily/{day_shift_nb}/periods?token={TOKEN}&insee=75056'
         rep = requests.get(url)
 
-        assert rep.status_code == 200, f"API call failed with code error {rep.status_code}"
+        assert rep.status_code == 200, f"API call failed with code error {rep.status_code} : \nTOKEN = {TOKEN}"
         
         df = pd.DataFrame(rep.json()['forecast']).loc[:,['temp2m','probarain','weather','wind10m','datetime']]
         df['datetime'] = pd.to_datetime(df.datetime)
