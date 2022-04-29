@@ -18,7 +18,7 @@ st.markdown("""Ce site vous permet de prédire le nombre de places libres et de 
 
 today = datetime.datetime.now()
 
-stations = st.multiselect("Séléctionnez une ou plusieurs stations :", ['Mairie du 9ème', 'Geoffroy - Mairie'])
+stations = st.multiselect("Séléctionnez une ou plusieurs stations :", ['Mairie du 9ème', 'Geoffroy - Mairie', 'Favart - Italiens'])
 
 
 date = st.date_input("Séléctionnez une date :", 
@@ -32,7 +32,7 @@ hour = st.time_input('Séléctionnez une heure :',
 
 
 
-if st.button('Compute predictions 🤖🧠'):
+if st.button('Exécuter les prédictions 🤖🧠'):
     vb = velibPredictor(date, hour, stations)
     vb.retrieve_meteo_forecast()
     display_preds(vb.predict())
