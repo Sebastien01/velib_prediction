@@ -18,7 +18,8 @@ st.markdown("""Ce site vous permet de prédire le nombre de places libres et de 
 
 today = datetime.datetime.now()
 
-stations = st.multiselect("Séléctionnez une ou plusieurs stations :", ['Mairie du 9ème', 'Geoffroy - Mairie', 'Favart - Italiens'])
+stations = st.multiselect("Séléctionnez une ou plusieurs stations :", ['Mairie du 9ème', 'Geoffroy - Mairie',
+                                                                       'Favart - Italiens', 'Mairie du 12ème'])
 
 
 date = st.date_input("Séléctionnez une date :", 

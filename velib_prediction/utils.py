@@ -6,7 +6,8 @@ from joblib import load
 
 model_dic = { 'Mairie du 9ème' : ['artefact_docks.joblib', 'artefact_meca.joblib'],
               'Geoffroy - Mairie' : ['mairie_neuf_docks.joblib', 'mairie_neuf_meca.joblib'],
-              'Favart - Italiens' : ['favart_italiens_docks.joblib', 'favart_italiens_meca.joblib']}
+              'Favart - Italiens' : ['favart_italiens_docks.joblib', 'favart_italiens_meca.joblib'],
+              'Mairie du 12ème': ['mairie_douze_docks.joblib', 'mairie_douze_meca.joblib']}
 
 class velibPredictor():
     '''This class can collect meteo datapoints and make velib/docks predictions for a specified date and hour'''
