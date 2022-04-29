@@ -3,34 +3,40 @@ import datetime
 
 from utils import velibPredictor
 
-def display_preds(dic):
-    st.header("La Grange Batelière")
-    st.write(f"🅿️ : {dic.get('MAIRIE_docks_available'):.0f}")
-    st.write(f"🚲 : {dic.get('MAIRIE_meca_available'):.0f}")
+def display_preds(dic):    
+    for station in stations:
+        scores = dic.get(station)
+        
+        st.header(station)
+        st.write(f"🅿️ : {scores[0]:.0f}")
+        st.write(f"🚲 : {scores[1]:.0f}")
 
-    st.header("Artefact")
-    st.write(f"🅿️ : {dic.get('ATF_docks_available'):.0f}")
-    st.write(f"🚲 : {dic.get('ATF_meca_available'):.0f}")
 
-st.title("Combien y a t-il de places et de velibs ?")
+st.title("Combien-de-velib.com")
+st.markdown("""Ce site vous permet de prédire le nombre de places libres et de vélos mécaniques disponibles 
+            pour les stations et la date de votre choix.""")
 
 today = datetime.datetime.now()
 
-date = st.date_input("Pour quel jour voulez-vous connaitre les informations de votre station ?", 
+stations = st.multiselect("Séléctionnez une ou plusieurs stations :", ['Mairie du 9ème', 'Geoffroy - Mairie'])
+
+
+date = st.date_input("Séléctionnez une date :", 
                      min_value = today,
                      max_value = (today + datetime.timedelta(days=13))
                      )
 
-hour = st.time_input('A quelle heure ?',
+hour = st.time_input('Séléctionnez une heure :',
                      datetime.time(12,30)
                      )
 
 
 
 if st.button('Compute predictions 🤖🧠'):
-    vb = velibPredictor(date, hour)
+    vb = velibPredictor(date, hour, stations)
     vb.retrieve_meteo_forecast()
     display_preds(vb.predict())
+
     
 else:
-     st.write('No date input yet...')
+     st.write('')

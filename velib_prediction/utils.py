@@ -3,28 +3,27 @@ import os
 import requests
 
 from joblib import load
-from pathlib import Path
 
+model_dic = { 'Mairie du 9ème' : ['artefact_docks.joblib', 'artefact_meca.joblib'],
+              'Geoffroy - Mairie' : ['mairie_neuf_docks.joblib', 'mairie_neuf_meca.joblib'],
+              'Favart - Italiens' : ['favart_italiens_docks.joblib', 'favart_italiens_meca.joblib']}
 
 class velibPredictor():
     '''This class can collect meteo datapoints and make velib/docks predictions for a specified date and hour'''
     
-    def __init__(self, date, hour):
-        
+    def __init__(self, date, hour, stations):
         
         self.target_date = pd.Timestamp(f"{date} {hour}", tz="Europe/Brussels")
+        self.stations = stations
         
-        self.ATF_DOCKS = load('velib_prediction/modeling/models/artefact_docks.joblib')
-        self.ATF_MECA = load('velib_prediction/modeling/models/artefact_meca.joblib')
-        self.MAIRIE_DOCKS = load('velib_prediction/modeling/models/mairie_neuf_docks.joblib')
-        self.MAIRIE_MECA = load('velib_prediction/modeling/models/mairie_neuf_meca.joblib')
-
+        path = 'velib_prediction/modeling/models/'
+        self.models = {st: [load(path+model_dic[st][0]),load(path+model_dic[st][1])] for st in stations}
         
     def get_API_meteo(self, day_shift_nb):
         """Retrieve meteo forecast info via meteo-concept' API, return a pd.DataFrame for a given day"""
 
         TOKEN = os.environ["METEO_TOKEN"]
-    
+        
         url = f'https://api.meteo-concept.com/api/forecast/daily/{day_shift_nb}/periods?token={TOKEN}&insee=75056'
         rep = requests.get(url)
 
@@ -59,11 +58,15 @@ class velibPredictor():
         self.X['day']    = self.target_date.day_of_week
         self.X['minute'] = self.target_date.minute
         
+        return {st : [mod_tup[0].predict(self.X).item(),
+                      mod_tup[1].predict(self.X).item()] for st, mod_tup in self.models.items()}
+        
         return {
             'ATF_docks_available'    : self.ATF_DOCKS.predict(self.X).item(),
             'ATF_meca_available'     : self.ATF_MECA.predict(self.X).item(),
             'MAIRIE_docks_available' : self.MAIRIE_DOCKS.predict(self.X).item(),
-            'MAIRIE_meca_available'  : self.MAIRIE_MECA.predict(self.X).item()
+            'MAIRIE_meca_available'  : self.MAIRIE_MECA.predict(self.X).item(),
+            'X':self.X
             }
         
 
