@@ -1,30 +1,68 @@
 import pandas as pd
 import os
 import requests
+import os
+import pickle
 
-from joblib import load
+from pipeline import create_time_feature
 
-model_dic = { 'Mairie du 9ème' : ['artefact_docks.joblib', 'artefact_meca.joblib'],
-              'Geoffroy - Mairie' : ['mairie_neuf_docks.joblib', 'mairie_neuf_meca.joblib'],
-              'Favart - Italiens' : ['favart_italiens_docks.joblib', 'favart_italiens_meca.joblib'],
-              'Mairie du 12ème': ['mairie_douze_docks.joblib', 'mairie_douze_meca.joblib']}
+
+model_dic = {8: 'docks_cl_8.pkl',
+             88: 'docks_cl_88.pkl',
+             11: 'docks_cl_11.pkl',
+             888: 'docks_cl_888.pkl',
+             33: 'docks_cl_33.pkl',
+             2: 'docks_cl_2.pkl',
+             3: 'docks_cl_3.pkl',
+             1: 'docks_cl_1.pkl',
+             0: 'docks_cl_0.pkl',
+             4: 'docks_cl_4.pkl',
+             7: 'docks_cl_7.pkl',
+             555: 'docks_cl_555.pkl',
+             55: 'docks_cl_55.pkl',
+             6: 'docks_cl_6.pkl'}
+    
+
 
 class velibPredictor():
     '''This class can collect meteo datapoints and make velib/docks predictions for a specified date and hour'''
     
-    def __init__(self, date, hour, stations):
+    def __init__(self):
+        
+        self.stations = None
+        self.date = None
+        self.hour = None
+
+        
+        self.station_df = pd.read_csv('data/stations_info.csv').set_index('name')
+        self.station_cluster_dic = dict(zip(self.station_df.index, self.station_df.cluster))
+
+        self.station_id_dic = None
+        
+        self.models = {cluster : pickle.load(open(f"models/{mod}","rb")) for cluster,mod in model_dic.items()}
+        
+    
+    def add_time(self, date, hour):
+        
+        self.date = date
+        self.hour = hour
         
         self.target_date = pd.Timestamp(f"{date} {hour}", tz="Europe/Brussels")
+        
+        
+    def add_stations(self, stations):
+        
         self.stations = stations
+        self.station_id_dic = {int(self.station_df.at[st,'station_id']) : st for st in self.stations}
         
-        path = 'velib_prediction/modeling/models/'
-        self.models = {st: [load(path+model_dic[st][0]),load(path+model_dic[st][1])] for st in stations}
-        
+    
     def get_API_meteo(self, day_shift_nb):
         """Retrieve meteo forecast info via meteo-concept' API, return a pd.DataFrame for a given day"""
 
-        TOKEN = os.environ["METEO_TOKEN"]
+       # TOKEN = os.environ["METEO_TOKEN"]
         
+        TOKEN = 'b2e61b6debca16466d2155717dfbd66e4174baaf17c9be89c8daae6addcb553f'
+
         url = f'https://api.meteo-concept.com/api/forecast/daily/{day_shift_nb}/periods?token={TOKEN}&insee=75056'
         rep = requests.get(url)
 
@@ -49,27 +87,49 @@ class velibPredictor():
         else:
             df = self.get_API_meteo(day_shift)
             self.meteo_info = df.loc[(self.target_date - pd.Timedelta(hours=5, minutes=59)) : self.target_date]
-       
-    
+            
+            
+            
     def predict(self):
         
-        self.X = self.meteo_info
-        self.X['month']  = self.target_date.month
-        self.X['hour']   = self.target_date.hour
-        self.X['day']    = self.target_date.day_of_week
-        self.X['minute'] = self.target_date.minute
+        self.X = self.meteo_info.reset_index().rename({'datetime':'time'}, axis='columns')
+        self.X = create_time_feature(self.X)
         
-        return {st : [mod_tup[0].predict(self.X).item(),
-                      mod_tup[1].predict(self.X).item()] for st, mod_tup in self.models.items()}
+        results = dict()
         
-        return {
-            'ATF_docks_available'    : self.ATF_DOCKS.predict(self.X).item(),
-            'ATF_meca_available'     : self.ATF_MECA.predict(self.X).item(),
-            'MAIRIE_docks_available' : self.MAIRIE_DOCKS.predict(self.X).item(),
-            'MAIRIE_meca_available'  : self.MAIRIE_MECA.predict(self.X).item(),
-            'X':self.X
-            }
+        for st_id, st_name  in self.station_id_dic.items():
+            
+            X = self.X.assign(station_id = st_id)
+            
+            #I should have dropped "capacity" during training as it doesn't bring any more info to our model
+            X['capacity'] = int(self.station_df.at[st_name, 'capacity']) 
+            
+            X.columns = ['station_id', 'capacity', 'temp2m', 'probarain', 'weather', 'wind10m',
+                 'month', 'hour', 'day', 'minute']
+            
+            cluster = self.station_cluster_dic.get(st_name)
+            model = self.models.get(cluster)
+            
+            results[st_name] = model.predict(X).item()
         
+        return results
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
