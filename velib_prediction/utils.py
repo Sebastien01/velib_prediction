@@ -4,6 +4,7 @@ import requests
 import os
 import pickle
 
+
 def create_time_feature(df): #To use when creating X_train
     df['time'] = pd.to_datetime(df['time'])
     df['month'] = df['time'].dt.month
@@ -65,7 +66,9 @@ class velibPredictor():
     def get_API_meteo(self, day_shift_nb):
         """Retrieve meteo forecast info via meteo-concept' API, return a pd.DataFrame for a given day"""
 
-        TOKEN = os.environ["METEO_TOKEN"]
+
+        TOKEN = 'b2e61b6debca16466d2155717dfbd66e4174baaf17c9be89c8daae6addcb553f'
+        #TOKEN = os.environ["METEO_TOKEN"]
 
         url = f'https://api.meteo-concept.com/api/forecast/daily/{day_shift_nb}/periods?token={TOKEN}&insee=75056'
         rep = requests.get(url)
@@ -87,6 +90,7 @@ class velibPredictor():
         if self.target_date.hour < 2:
             df = self.get_API_meteo(day_shift - 1)
             self.meteo_info = df.tail(1)
+            
 
         else:
             df = self.get_API_meteo(day_shift)
@@ -96,8 +100,12 @@ class velibPredictor():
             
     def predict(self):
         
+        
+
         self.X = self.meteo_info.reset_index().rename({'datetime':'time'}, axis='columns')
+        self.X.loc[0,'time'] = self.target_date
         self.X = create_time_feature(self.X)
+        
         
         results = dict()
         
@@ -105,8 +113,8 @@ class velibPredictor():
             
             X = self.X.assign(station_id = st_id)
             
-            X.columns = ['station_id', 'temp2m', 'probarain', 'weather', 'wind10m',
-                 'month', 'hour', 'day', 'minute']
+            X = X[['station_id', 'temp2m', 'probarain', 'weather', 'wind10m',
+                 'month', 'hour', 'day', 'minute']]
             
             cluster = self.station_cluster_dic.get(st_name)
             model = self.models.get(cluster)
