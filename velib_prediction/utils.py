@@ -50,7 +50,7 @@ class velibPredictor():
         
     
     def add_time(self, date, hour):
-        
+        """Update users' date input"""
         self.date = date
         self.hour = hour
         
@@ -58,7 +58,7 @@ class velibPredictor():
         
         
     def add_stations(self, stations):
-        
+        """Update users' station input"""
         self.stations = stations
         self.station_id_dic = {int(self.station_df.at[st,'station_id']) : st for st in self.stations}
         
@@ -66,9 +66,7 @@ class velibPredictor():
     def get_API_meteo(self, day_shift_nb):
         """Retrieve meteo forecast info via meteo-concept' API, return a pd.DataFrame for a given day"""
 
-
-        TOKEN = 'b2e61b6debca16466d2155717dfbd66e4174baaf17c9be89c8daae6addcb553f'
-        #TOKEN = os.environ["METEO_TOKEN"]
+        TOKEN = os.environ["METEO_TOKEN"]
 
         url = f'https://api.meteo-concept.com/api/forecast/daily/{day_shift_nb}/periods?token={TOKEN}&insee=75056'
         rep = requests.get(url)
@@ -81,12 +79,14 @@ class velibPredictor():
 
     
     def retrieve_meteo_forecast(self):
+        """Select the matching meteo forecast. API returns a full day"""
         
         now = pd.Timestamp.now(tz="Europe/Brussels")
         
         day_shift = (self.target_date - now.floor('d')).days
         assert day_shift <= 13, "No meteo data after 13 days"
         
+        #If the hour is between midnight and 02h, the matching time step is the day before after 20h
         if self.target_date.hour < 2:
             df = self.get_API_meteo(day_shift - 1)
             self.meteo_info = df.tail(1)
@@ -99,8 +99,7 @@ class velibPredictor():
             
             
     def predict(self):
-        
-        
+        """Returns a dic with results for each station"""
 
         self.X = self.meteo_info.reset_index().rename({'datetime':'time'}, axis='columns')
         self.X.loc[0,'time'] = self.target_date

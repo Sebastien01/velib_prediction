@@ -49,8 +49,8 @@ ohe_pipe = ColumnTransformer([
     
     
 def build_pipe(params):
-    
     ''' Returns a pipeline ready to be trained '''
+    
     pipe = Pipeline([
         ('ohe_',ohe_pipe),
         ('model',xgb.XGBRegressor(**params))

@@ -19,4 +19,5 @@ while True:
     except:
         print("error "+str(IOError))
 
-    sleep(60*15) #collect datapoints every 15mins
+    #collect datapoints every 15mins
+    sleep(60*15) 
