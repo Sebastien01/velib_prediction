@@ -43,22 +43,18 @@ def load_clean_hist(path='/Users/sebastienvallin/code/Sebastien01/velib_predicti
     
     
 ohe_pipe = ColumnTransformer([
-                    ('ohe',OneHotEncoder(sparse=False, handle_unknown='ignore'),['station_id'])
-                    ],remainder='passthrough'
-                                )
+                    ('ohe',OneHotEncoder(sparse=False, handle_unknown='ignore'),['station_id'])]
+                             ,remainder='passthrough')
     
-def build_pipe(n_estimators = 3_000):
+    
+    
+def build_pipe(params):
+    
     ''' Returns a pipeline ready to be trained '''
-
-    pipe = Pipeline([('ohe_',ohe_pipe),
-                    ('model',xgb.XGBRegressor(n_estimators=n_estimators,
-                                            learning_rate=0.05,
-                                            objective='reg:squarederror',
-                                            colsample_bylevel= 0.6 , #to prevent overfitting
-                                            max_depth = 9,
-                                            gamma = 4,
-                                            seed=20))
-                    ])
+    pipe = Pipeline([
+        ('ohe_',ohe_pipe),
+        ('model',xgb.XGBRegressor(**params))
+         ])
 
     return pipe
 
