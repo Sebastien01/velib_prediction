@@ -20,7 +20,7 @@ st.markdown("""Ce site vous permet de prédire le nombre de places libres et de 
 
 
 stations = st.multiselect("Séléctionnez une ou plusieurs stations :", vp.station_df.index)
-vp.add_stations(stations = stations)
+
 
 
 
@@ -34,11 +34,12 @@ hour = st.time_input('Séléctionnez une heure :',
                      datetime.time(12,30)
                      )
 
-vp.add_time(date = date, hour = hour)
-
 
 if st.button('Exécuter les prédictions 🤖🧠'):
-
+    
+    vp.add_stations(stations = stations)
+    vp.add_time(date = date, hour = hour)
+    
     vp.retrieve_meteo_forecast()
     display_preds(vp.predict())
 

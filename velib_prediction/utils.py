@@ -34,12 +34,12 @@ class velibPredictor():
         self.hour = None
 
         
-        self.station_df = pd.read_csv('data/stations_info.csv').set_index('name')
+        self.station_df = pd.read_csv('velib_prediction/data/stations_info.csv').set_index('name')
         self.station_cluster_dic = dict(zip(self.station_df.index, self.station_df.cluster))
 
         self.station_id_dic = None
         
-        self.models = {cluster : pickle.load(open(f"models/{mod}","rb")) for cluster,mod in model_dic.items()}
+        self.models = {cluster : pickle.load(open(f"velib_prediction/models/{mod}","rb")) for cluster,mod in model_dic.items()}
         
     
     def add_time(self, date, hour):
@@ -59,9 +59,7 @@ class velibPredictor():
     def get_API_meteo(self, day_shift_nb):
         """Retrieve meteo forecast info via meteo-concept' API, return a pd.DataFrame for a given day"""
 
-       # TOKEN = os.environ["METEO_TOKEN"]
-        
-        TOKEN = 'b2e61b6debca16466d2155717dfbd66e4174baaf17c9be89c8daae6addcb553f'
+        TOKEN = os.environ["METEO_TOKEN"]
 
         url = f'https://api.meteo-concept.com/api/forecast/daily/{day_shift_nb}/periods?token={TOKEN}&insee=75056'
         rep = requests.get(url)
@@ -101,10 +99,7 @@ class velibPredictor():
             
             X = self.X.assign(station_id = st_id)
             
-            #I should have dropped "capacity" during training as it doesn't bring any more info to our model
-            X['capacity'] = int(self.station_df.at[st_name, 'capacity']) 
-            
-            X.columns = ['station_id', 'capacity', 'temp2m', 'probarain', 'weather', 'wind10m',
+            X.columns = ['station_id', 'temp2m', 'probarain', 'weather', 'wind10m',
                  'month', 'hour', 'day', 'minute']
             
             cluster = self.station_cluster_dic.get(st_name)
