@@ -11,12 +11,14 @@ You may run this app on your machine:
 streamlit run streamlit_app.py
 ```
 
+
+# Collect data
+
 You can also retrieve velib data using this command :
 
 ``` bash
 python fetch_data.py
 ```
 
-# Objective
 
 
