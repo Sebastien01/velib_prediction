@@ -3,7 +3,5 @@
 .ipynb_checkpoints
 .DS_Store
 raw_data/*.csv
-data/velib.csv
-*.csv
 **/__pycache__/
 .env
