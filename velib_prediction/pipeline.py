@@ -62,13 +62,3 @@ def build_pipe(n_estimators = 3_000):
 
     return pipe
 
-
-
-def create_time_feature(df): #To use when creating X_train
-    df['time'] = pd.to_datetime(df['time'])
-    df['month'] = df['time'].dt.month
-    df['hour'] = df['time'].dt.hour
-    df['day'] = df['time'].dt.dayofweek
-    df['minute'] = df['time'].dt.minute
-
-    return df.drop(columns=['time'])
