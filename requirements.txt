@@ -6,5 +6,4 @@ joblib
 scikit-learn
 coverage
 pytest
-pickle
 xgboost
