@@ -20,5 +20,5 @@ You can also retrieve velib data using this command :
 python fetch_data.py
 ```
 
-
+.
 
