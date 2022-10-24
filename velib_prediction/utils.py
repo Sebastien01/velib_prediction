@@ -66,7 +66,9 @@ class velibPredictor():
     def get_API_meteo(self, day_shift_nb):
         """Retrieve meteo forecast info via meteo-concept' API, return a pd.DataFrame for a given day"""
 
-        TOKEN = os.environ["METEO_TOKEN"]
+
+        TOKEN = 'b2e61b6debca16466d2155717dfbd66e4174baaf17c9be89c8daae6addcb553f'
+        #TOKEN = os.environ["METEO_TOKEN"]
 
         url = f'https://api.meteo-concept.com/api/forecast/daily/{day_shift_nb}/periods?token={TOKEN}&insee=75056'
         rep = requests.get(url)
