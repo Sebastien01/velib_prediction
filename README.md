@@ -21,4 +21,3 @@ python fetch_data.py
 ```
 
 
-
